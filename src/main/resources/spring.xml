@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="com.study">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
+
+    <bean class="com.alibaba.druid.pool.DruidDataSource" id="dataSource">
+        <property name="username" value="${mysql.username}"/>
+        <property name="password" value="${mysql.password}"/>
+        <property name="url" value="${mysql.url}"/>
+        <property name="driverClassName" value="${mysql.driver}"/>
+    </bean>
+
+    <!--配置SqlSessionFactoryBean，可以直接在spring的IOC中获取sqlSessionFactory
+    -->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+        <!--设置数据源-->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 设置MyBatis配置文件的路径（可以不设置） -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--设置类型别名所对应的包-->
+        <property name="typeAliasesPackage" value="com.study.pojo"/>
+    </bean>
+
+    <!--
+    配置mapper接口的扫描配置
+    >由mybatis-spring提供，可以将指定包下所有的mapper接口创建动态代理
+    >并将这些动态代理作为IOC容器的bean管理
+    -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.study.mapper"/>
+    </bean>
+
+    <!--配置事务管理器（相当于切面）-->
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--
+    开启事务的注解驱动（相当于连接点）
+    将使用注解@Transactional标识的方法或类中所有的方法进行事务管理
+    -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>

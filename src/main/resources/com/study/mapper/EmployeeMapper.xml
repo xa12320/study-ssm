@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace要和mapper接口的全类名保持一致,路径 + 接口类名-->
+<!--sql语句的id要和mapper接口中的方法名保持一致-->
+
+<mapper namespace="com.study.mapper.EmployeeMapper">
+    <!--getAllEmp-->
+    <select id="getAllEmp" resultType="Employee">
+        select * from t_emp
+    </select>
+
+    <!--int addEmp(Employee employee);-->
+    <insert id="addEmp">
+        insert into t_emp value(null,#{empName},#{age},#{sex},#{email})
+    </insert>
+
+    <!--Employee getEmpById(Integer index);-->
+    <select id="getEmpById" resultType="Employee">
+        select * from t_emp where emp_id = #{index}
+    </select>
+
+    <!--int updateEmpById(Employee employee, Integer id);-->
+    <update id="updateEmpById">
+        update t_emp set emp_name = #{empName},age = #{age},sex = #{sex},email = #{email} where emp_id = #{empId}
+    </update>
+</mapper>
